@@ -1,0 +1,5 @@
+function Test()
+global x;
+[v_ImageBR, ~, v_AlphaBR]	= imread('baseR.png');
+v_ImageBR = imresize(v_ImageBR, [320 280], 'lanczos3' );
+v_AlphaBR = imresize(v_AlphaBR, [320 280], 'lanczos3' );

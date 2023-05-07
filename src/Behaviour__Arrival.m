@@ -1,0 +1,53 @@
+function Behaviour__Arrival ()
+%% global variables
+global TimeSteps;
+global BoidsNum;
+global Boids;
+
+%% first draw
+% [v_Image,v_Alpha,BoidsPlot,fHandler] = InitializeGraphics();
+    [fHandler]=InitializeGraphics();
+     InitializeBase();
+     [v_Image,v_Alpha,BoidsPlot] = InitializeArmyBlue();
+%% target is optional, if target is undefined,
+% then get mouse position on move cursor as target
+Target = [0 0 0];
+titleStr = 'Implementation of Arrival Behavior';
+titleStr = [titleStr newline '(Use mouse to create a new target)']
+title(titleStr);
+
+SaveTarget = plot(Target(1), Target(2), 'o','MarkerSize',10, 'MarkerFaceColor','r','Color','r');
+set(fHandler, 'WindowButtonDownFcn',@cursorClickCallback);
+
+%Event Mouse click
+%     function cursorPosition = cursorClickCallback(o,e)
+%         p = get(gca,'CurrentPoint');
+%         cursorPosition(1:2) = p(1,1:2);
+%         cursorPosition(3) = 0;
+%         Target = cursorPosition;
+%         delete(SaveTarget);
+%         %Draw Circle - Targer
+%         SaveTarget = plot(Target(1), Target(2), 'o','MarkerSize',10,'MarkerFaceColor','r','Color','r');
+%     end
+
+%% calculate agents' positions to move to each iteration
+timeTick = 1;
+while (timeTick < TimeSteps)
+    for BoidIndex = 1:BoidsNum
+        Boids = updateAtBoundary(Boids,BoidIndex);
+        % steering
+        CurrentBoid = Boids(BoidIndex, :);
+        force = steer_arrival(CurrentBoid, Target);
+        Boids(BoidIndex,:) = applyForce(CurrentBoid, force);               
+    end
+    % redraw
+    RedrawGraphics(Boids,BoidsNum,v_Image,v_Alpha,BoidsPlot);
+    M(timeTick)=getframe;
+    timeTick = timeTick+1;
+end
+% Record video
+MyMovie = VideoWriter('ArrivalBehavior.avi');
+open(MyMovie);
+writeVideo(MyMovie,M);
+close(MyMovie);
+end
