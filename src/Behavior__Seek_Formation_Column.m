@@ -100,7 +100,7 @@ Leader = Boids(1, :);
 BehindPosition  = Leader;
 BoidIndex = 2;
 
-TargetCar = [ 700 50 0;xConTin yConTin 0;  700 0 0; 50 50 0];%;
+TargetCar = [520 150 0; 700 50 0; 710 380 0 ;670 560 0 ;xConTin yConTin 0; 720 620 0; 650 520 0; 700 400 0; 720 100 0; 700 0 0; 50 50 0];%;
 
 TargetIndex = 1;
 [tm, tn] = size(TargetCar);
@@ -206,33 +206,23 @@ while (timeTick < TimeSteps)
     %Alpha_Horizontal = CalculationHorizontalAngle(LeaderG);
     %[Greens, ~] = steer_Seek_Formation_V(MousePosition, Greens,GreenNum, LeaderG, D_Behind, D_Beside, Alpha_Horizontal);
     
-    %%
-    %% daviation Bule
 
-    deviationXB = ShootDistanceB*(1-AccuracyB*(2*rand - 1));
-    deviationYB = ShootDistanceB*(1-AccuracyB*(2*rand - 1));
-    
-    %% daviation Red
-    deviationXR = ShootDistanceR*(1-AccuracyR*(2*rand - 1));
-    deviationYR = ShootDistanceR*(1-AccuracyR*(2*rand - 1));
-    
-    %% daviation Green
-    deviationXG = ShootDistanceG*(1-AccuracyG*(2*rand - 1));
-    deviationYG = ShootDistanceG*(1-AccuracyG*(2*rand - 1));
-    
     %% Reds
 
     AttackBlue = zeros(1,ArmyBluesNum);
+    AttackRed=zeros(1,BoidsNum);
+    AttackGreen=zeros(1,GreenNum);
     
     for i=1:BoidsNum
-        %         if (goToAttack == 0)
+        % if (goToAttack == 0)
         if(Boids(i,15)>0)
             Boids = updateAtBoundary(Boids,i);
             CurrentBoid = Boids(i, :);
             Boids(i,:) = applyForce(CurrentBoid, force);
             [J,~]=findTarget(Boids(i,:),ArmyBluesNum,ArmyBlues);
-            if (J>0 && dist(Boids(i,:),ArmyBlues(J,:))<ShootDistanceB) %%
-                %% hàm duong dan cua quan do
+            distant = dist(Boids(i,:),ArmyBlues(J,:));
+            if (J>0 && distant <ShootDistanceR)
+                %% hÃ m duong dan cua quan do
                 Boids(i, :) = tempReds(i, :);
                 Cars = tempCars;
                 %%
@@ -241,17 +231,14 @@ while (timeTick < TimeSteps)
                 pause(0.02);
                 delete(c1);
                 
-                AttackBlue(1,J)=AttackBlue(1,J)+5;
-                
-                %%cap nhat mau
-%                 [ArmyBluesNum,ArmyBlues] = UpdateArmyBlueHP(AttackBlue,ArmyBluesNum,ArmyBlues)
+                AttackBlue(1,J)=AttackBlue(1,J)+5*int64(randomAccurancy(AccuracyR)* distant /ShootDistanceR) ;
+
             end
         end
     end
     
         %% Greens
-        %AttackBlue = zeros(1,ArmyBluesNum);
-    
+   
     for i=1:GreenNum
         %         if (goToAttack == 0)
         if(Greens(i,15)>0)
@@ -259,17 +246,17 @@ while (timeTick < TimeSteps)
             CurrentBoid = Greens(i, :);
             Greens(i,:) = applyForce(CurrentBoid, force);
             [K,~]=findTarget(Greens(i,:),ArmyBluesNum,ArmyBlues);
-            if (K>0 && dist(Greens(i,:),ArmyBlues(K,:))<ShootDistanceB) %%
-                %% hàm duong dan cua quan do
+            if (K>0 && dist(Greens(i,:),ArmyBlues(K,:))<ShootDistanceG) %%
+                %% hÃ m duong dan cua quan do
                 Greens(i, :) = tempGreens(i, :);
                 Cars = tempCars;
                 %%
                 c1=line([Greens(i,1)-25, ArmyBlues(K,1)-25],[Greens(i,2)-15, ArmyBlues(K,2)-15],'Color','green','LineStyle','-.');
                 sound(gun,gunFs);
-                pause(0.02);
+                pause(0.01);
                 delete(c1);
                 
-                AttackBlue(1,K)=AttackBlue(1,K)+5;
+                AttackBlue(1,K)=AttackBlue(1,K)+5*int64(randomAccurancy(AccuracyG)* distant /ShootDistanceG);
                 
                 %%cap nhat mau
 %                 [ArmyBluesNum,ArmyBlues] = UpdateArmyBlueHP(AttackBlue,ArmyBluesNum,ArmyBlues)
@@ -277,8 +264,7 @@ while (timeTick < TimeSteps)
         end
     end
     %% Blues: duong dan quan xanh
-    AttackRed=zeros(1,BoidsNum);
-    AttackGreen=zeros(1,GreenNum);
+
     
     for i=1:ArmyBluesNum
         if(ArmyBlues(i,15)>0)
@@ -302,10 +288,10 @@ while (timeTick < TimeSteps)
                 ArmyBlues(i, :) = tempBlues(i, :);
                 %%
                 c2=line([Boids(J,1)-25, ArmyBlues(i,1)-25],[Boids(J,2)-15, ArmyBlues(i,2)-15],'Color','blue','LineStyle','-.');
-                pause(0.02);
+                pause(0.01);
                 sound(gun,gunFs);
                 delete(c2);
-                AttackRed(1,J)=AttackRed(1,J)+5;
+                AttackRed(1,J)=AttackRed(1,J)+5*int64(randomAccurancy(AccuracyB)* distant /ShootDistanceB);
 
             end
             
@@ -326,8 +312,8 @@ while (timeTick < TimeSteps)
                 %%
                 ArmyBlues(i, :) = tempBlues(i, :);
                 %%
-                c2=line([Greens(K,1)-25, ArmyBlues(i,1)-25],[Greens(K,2)-15, ArmyBlues(i,2)-15],'Color','green','LineStyle','-.');
-                pause(0.02);
+                c2=line([Greens(K,1)-25, ArmyBlues(i,1)-25],[Greens(K,2)-15, ArmyBlues(i,2)-15],'Color','blue','LineStyle','-.');
+                pause(0.01);
                 sound(gun,gunFs);
                 delete(c2);
                 AttackGreen(1,K)=AttackGreen(1,K)+5;

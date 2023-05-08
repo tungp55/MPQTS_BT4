@@ -15,13 +15,7 @@ global yConTin
 
 xConTin = 750;
 yConTin = 750;
-%%
-ShootDistanceB = 100; 
-ShootDistanceR = 100;
-ShootDistanceG = 100;
-BloodPos=5;
 
-%%
 %%
 
 EnvironmentWidth = 800;
@@ -144,6 +138,10 @@ Targets(:,14) = 2; % set max avoid force
 AccuracyB = 95;%; % do chinh xac
 AccuracyR = 30;%;
 AccuracyG = 95;%;
+ShootDistanceB = 400; 
+ShootDistanceR = 100;
+ShootDistanceG = 500;
+BloodPos=5;
 DieRNum =0 ; 
 DieBNum =0;
 DieGNum =0;
